@@ -1,141 +1,26 @@
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+<!DOCTYPE html>
+<html lang="pt-br">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>redes</title>
+	</head>
+		<body>
+			<table border="1" align="center">
+				<tr>
+					<td>
+						<strong>Rede de computadores</strong>
+						<p>uma rede de computadores é um conjunto de  equipamentos interligados de maneira a trocarem informações e compartilharem 	recursos, como arquivos de dados gravados, impressoras modems softwares e outros equipamentos.</p>
 
-public class PongGame extends JPanel implements ActionListener, KeyListener {
-    
-    // Definições do jogo
-    private static final int WIDTH = 800;
-    private static final int HEIGHT = 600;
-    private static final int PADDLE_WIDTH = 15;
-    private static final int PADDLE_HEIGHT = 100;
-    private static final int BALL_SIZE = 20;
-    
-    // Variáveis de controle
-    private int paddle1Y = HEIGHT / 2 - PADDLE_HEIGHT / 2;
-    private int paddle2Y = HEIGHT / 2 - PADDLE_HEIGHT / 2;
-    private int ballX = WIDTH / 2 - BALL_SIZE / 2;
-    private int ballY = HEIGHT / 2 - BALL_SIZE / 2;
-    private int ballSpeedX = -5;
-    private int ballSpeedY = 3;
-    private int paddle1Speed = 0;
-    private int paddle2Speed = 0;
-    private int player1Score = 0;
-    private int player2Score = 0;
+						<img src="redess.webp">
 
-    public PongGame() {
-        this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        this.setBackground(Color.BLACK);
-        this.setFocusable(true);
-        this.addKeyListener(this);
-        Timer timer = new Timer(1000 / 60, this); // Atualiza a cada 1/60 segundos
-        timer.start();
-    }
+						<strong><p>importância das redes de computadores</p></strong>
+						Proporcionando economia, compartilhamento de recursos, como impressoras e projetores, bem como de serviços, que é o caso da 	internet. permite também, por meio do compartilhamento de arquivos, o trabalho em equipe dos colaboradores.
+						<h2><p>LAN WAN</p></h2>
+						<p>LAN(Local Area Network) é uma rede de computadores que cobre uma área limitada, geralmente um edificio ou um campus. É usada para conectar dispositivos em um espaço fisico limitado, como uma casa, escritorioou sala de aula. já WAN (Wide Area Network) é uma rede de computadores que abrange uma area geografica maior, geralmente uma cidade, um estado ou até mesmo um país. Ela é usada para conectardispositivos que estão fosicamente distante entre si.</p>
+					</td>
+				</tr>
+			</table>
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        // Movimento das barras
-        paddle1Y += paddle1Speed;
-        paddle2Y += paddle2Speed;
-
-        // Controle de limites das barras
-        if (paddle1Y < 0) paddle1Y = 0;
-        if (paddle1Y > HEIGHT - PADDLE_HEIGHT) paddle1Y = HEIGHT - PADDLE_HEIGHT;
-        if (paddle2Y < 0) paddle2Y = 0;
-        if (paddle2Y > HEIGHT - PADDLE_HEIGHT) paddle2Y = HEIGHT - PADDLE_HEIGHT;
-
-        // Movimento da bola
-        ballX += ballSpeedX;
-        ballY += ballSpeedY;
-
-        // Colisão com as bordas
-        if (ballY <= 0 || ballY >= HEIGHT - BALL_SIZE) {
-            ballSpeedY = -ballSpeedY; // Inverte a direção vertical
-        }
-
-        // Colisão com as barras
-        if (ballX <= PADDLE_WIDTH && ballY >= paddle1Y && ballY <= paddle1Y + PADDLE_HEIGHT) {
-            ballSpeedX = -ballSpeedX; // Inverte a direção horizontal
-        }
-        if (ballX >= WIDTH - PADDLE_WIDTH - BALL_SIZE && ballY >= paddle2Y && ballY <= paddle2Y + PADDLE_HEIGHT) {
-            ballSpeedX = -ballSpeedX; // Inverte a direção horizontal
-        }
-
-        // Marcar pontos
-        if (ballX <= 0) {
-            player2Score++;
-            resetBall();
-        }
-        if (ballX >= WIDTH - BALL_SIZE) {
-            player1Score++;
-            resetBall();
-        }
-
-        repaint(); // Atualiza a tela
-    }
-
-    private void resetBall() {
-        ballX = WIDTH / 2 - BALL_SIZE / 2;
-        ballY = HEIGHT / 2 - BALL_SIZE / 2;
-        ballSpeedX = -ballSpeedX;
-        ballSpeedY = (int) (Math.random() * 6 - 3); // Direção aleatória
-    }
-
-    @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-
-        // Desenho da bola
-        g.setColor(Color.WHITE);
-        g.fillRect(ballX, ballY, BALL_SIZE, BALL_SIZE);
-
-        // Desenho das barras
-        g.fillRect(0, paddle1Y, PADDLE_WIDTH, PADDLE_HEIGHT); // Barra do jogador 1
-        g.fillRect(WIDTH - PADDLE_WIDTH, paddle2Y, PADDLE_WIDTH, PADDLE_HEIGHT); // Barra do jogador 2
-
-        // Desenho da pontuação
-        g.setFont(new Font("Arial", Font.PLAIN, 40));
-        g.drawString("Player 1: " + player1Score, 50, 50);
-        g.drawString("Player 2: " + player2Score, WIDTH - 200, 50);
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-        int key = e.getKeyCode();
-        if (key == KeyEvent.VK_W) {
-            paddle1Speed = -5; // Subir a barra do jogador 1
-        }
-        if (key == KeyEvent.VK_S) {
-            paddle1Speed = 5; // Descer a barra do jogador 1
-        }
-        if (key == KeyEvent.VK_UP) {
-            paddle2Speed = -5; // Subir a barra do jogador 2
-        }
-        if (key == KeyEvent.VK_DOWN) {
-            paddle2Speed = 5; // Descer a barra do jogador 2
-        }
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-        int key = e.getKeyCode();
-        if (key == KeyEvent.VK_W || key == KeyEvent.VK_S) {
-            paddle1Speed = 0; // Parar a barra do jogador 1
-        }
-        if (key == KeyEvent.VK_UP || key == KeyEvent.VK_DOWN) {
-            paddle2Speed = 0; // Parar a barra do jogador 2
-        }
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {}
-
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Pong Game");
-        PongGame gamePanel = new PongGame();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add(gamePanel);
-        frame.pack();
-        frame.setVisible(true);
-    }
-}
+		</body>
+</html>
