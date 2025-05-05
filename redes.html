@@ -1,96 +1,141 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galaxy Quest - O Jogo</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #0b0c2a;
-            color: white;
-            margin: 0;
-            padding: 0;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+public class PongGame extends JPanel implements ActionListener, KeyListener {
+    
+    // Definições do jogo
+    private static final int WIDTH = 800;
+    private static final int HEIGHT = 600;
+    private static final int PADDLE_WIDTH = 15;
+    private static final int PADDLE_HEIGHT = 100;
+    private static final int BALL_SIZE = 20;
+    
+    // Variáveis de controle
+    private int paddle1Y = HEIGHT / 2 - PADDLE_HEIGHT / 2;
+    private int paddle2Y = HEIGHT / 2 - PADDLE_HEIGHT / 2;
+    private int ballX = WIDTH / 2 - BALL_SIZE / 2;
+    private int ballY = HEIGHT / 2 - BALL_SIZE / 2;
+    private int ballSpeedX = -5;
+    private int ballSpeedY = 3;
+    private int paddle1Speed = 0;
+    private int paddle2Speed = 0;
+    private int player1Score = 0;
+    private int player2Score = 0;
+
+    public PongGame() {
+        this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        this.setBackground(Color.BLACK);
+        this.setFocusable(true);
+        this.addKeyListener(this);
+        Timer timer = new Timer(1000 / 60, this); // Atualiza a cada 1/60 segundos
+        timer.start();
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // Movimento das barras
+        paddle1Y += paddle1Speed;
+        paddle2Y += paddle2Speed;
+
+        // Controle de limites das barras
+        if (paddle1Y < 0) paddle1Y = 0;
+        if (paddle1Y > HEIGHT - PADDLE_HEIGHT) paddle1Y = HEIGHT - PADDLE_HEIGHT;
+        if (paddle2Y < 0) paddle2Y = 0;
+        if (paddle2Y > HEIGHT - PADDLE_HEIGHT) paddle2Y = HEIGHT - PADDLE_HEIGHT;
+
+        // Movimento da bola
+        ballX += ballSpeedX;
+        ballY += ballSpeedY;
+
+        // Colisão com as bordas
+        if (ballY <= 0 || ballY >= HEIGHT - BALL_SIZE) {
+            ballSpeedY = -ballSpeedY; // Inverte a direção vertical
         }
 
-        header {
-            background-color: #1a1c4c;
-            padding: 20px;
-            text-align: center;
+        // Colisão com as barras
+        if (ballX <= PADDLE_WIDTH && ballY >= paddle1Y && ballY <= paddle1Y + PADDLE_HEIGHT) {
+            ballSpeedX = -ballSpeedX; // Inverte a direção horizontal
+        }
+        if (ballX >= WIDTH - PADDLE_WIDTH - BALL_SIZE && ballY >= paddle2Y && ballY <= paddle2Y + PADDLE_HEIGHT) {
+            ballSpeedX = -ballSpeedX; // Inverte a direção horizontal
         }
 
-        header h1 {
-            margin: 0;
-            font-size: 3em;
+        // Marcar pontos
+        if (ballX <= 0) {
+            player2Score++;
+            resetBall();
+        }
+        if (ballX >= WIDTH - BALL_SIZE) {
+            player1Score++;
+            resetBall();
         }
 
-        .container {
-            padding: 20px;
-            text-align: center;
+        repaint(); // Atualiza a tela
+    }
+
+    private void resetBall() {
+        ballX = WIDTH / 2 - BALL_SIZE / 2;
+        ballY = HEIGHT / 2 - BALL_SIZE / 2;
+        ballSpeedX = -ballSpeedX;
+        ballSpeedY = (int) (Math.random() * 6 - 3); // Direção aleatória
+    }
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        // Desenho da bola
+        g.setColor(Color.WHITE);
+        g.fillRect(ballX, ballY, BALL_SIZE, BALL_SIZE);
+
+        // Desenho das barras
+        g.fillRect(0, paddle1Y, PADDLE_WIDTH, PADDLE_HEIGHT); // Barra do jogador 1
+        g.fillRect(WIDTH - PADDLE_WIDTH, paddle2Y, PADDLE_WIDTH, PADDLE_HEIGHT); // Barra do jogador 2
+
+        // Desenho da pontuação
+        g.setFont(new Font("Arial", Font.PLAIN, 40));
+        g.drawString("Player 1: " + player1Score, 50, 50);
+        g.drawString("Player 2: " + player2Score, WIDTH - 200, 50);
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        int key = e.getKeyCode();
+        if (key == KeyEvent.VK_W) {
+            paddle1Speed = -5; // Subir a barra do jogador 1
         }
-
-        .game-image {
-            max-width: 80%;
-            height: auto;
-            margin: 20px 0;
-            border-radius: 10px;
+        if (key == KeyEvent.VK_S) {
+            paddle1Speed = 5; // Descer a barra do jogador 1
         }
-
-        .download-btn {
-            padding: 15px 30px;
-            background-color: #3d5afe;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 1.2em;
-            cursor: pointer;
-            text-decoration: none;
+        if (key == KeyEvent.VK_UP) {
+            paddle2Speed = -5; // Subir a barra do jogador 2
         }
-
-        .download-btn:hover {
-            background-color: #2a3eb1;
+        if (key == KeyEvent.VK_DOWN) {
+            paddle2Speed = 5; // Descer a barra do jogador 2
         }
+    }
 
-        footer {
-            background-color: #1a1c4c;
-            padding: 20px;
-            text-align: center;
-            margin-top: 30px;
+    @Override
+    public void keyReleased(KeyEvent e) {
+        int key = e.getKeyCode();
+        if (key == KeyEvent.VK_W || key == KeyEvent.VK_S) {
+            paddle1Speed = 0; // Parar a barra do jogador 1
         }
-
-        .contact {
-            margin-top: 40px;
+        if (key == KeyEvent.VK_UP || key == KeyEvent.VK_DOWN) {
+            paddle2Speed = 0; // Parar a barra do jogador 2
         }
+    }
 
-        .contact h2 {
-            margin-bottom: 10px;
-        }
+    @Override
+    public void keyTyped(KeyEvent e) {}
 
-        .contact p {
-            margin: 5px;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Galaxy Quest</h1>
-        <p>Aventura espacial como você nunca viu!</p>
-    </header>
-
-    <div class="container">
-        <img src="https://via.placeholder.com/800x400?text=Imagem+do+Jogo" alt="Galaxy Quest" class="game-image">
-        <p>Explore planetas misteriosos, enfrente inimigos intergalácticos e conquiste o universo!</p>
-        <a href="#" class="download-btn">Baixar Agora</a>
-
-        <div class="contact">
-            <h2>Contato</h2>
-            <p>Email: suporte@galaxyquest.com</p>
-            <p>Instagram: @galaxyquestgame</p>
-        </div>
-    </div>
-
-    <footer>
-        <p>&copy; 2025 Galaxy Quest Studios. Todos os direitos reservados.</p>
-    </footer>
-</body>
-</html>
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Pong Game");
+        PongGame gamePanel = new PongGame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.add(gamePanel);
+        frame.pack();
+        frame.setVisible(true);
+    }
+}
